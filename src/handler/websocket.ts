@@ -1,10 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResultV2 } from 'aws-lambda';
+import * as crypto from 'crypto';
 import { Db } from 'src/db/db';
 import { Helper } from 'src/helper';
-import { TextEncoder } from 'util';
-// Lambda doesn't support Node v15+ yet
-const { Crypto } = require("@peculiar/webcrypto");
-const { subtle } = new Crypto();
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResultV2 | undefined> {
   const connectionId = event.requestContext.connectionId;
@@ -13,11 +10,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   switch(body.event) {
     case 'start-linking':
-      const hashBuffer = await subtle.digest('SHA-256', new TextEncoder().encode(data));
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16)
-        .padStart(2, '0'))
-        .join('');
+      const hashHex = crypto.createHash('sha256').update(data).digest('hex');
       await Promise.all([
         Db.put({
           TableName: process.env.DYNAMODB_TABLE_NAME!,
