@@ -1,0 +1,108 @@
+service: easy-tfa-server-aws
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            Fn::GetAtt:
+              - dynamoDbTable
+              - Arn
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    DYNAMODB_TABLE_NAME:
+      Ref: dynamoDbTable
+    WS_ENDPOINT:
+      Fn::Join:
+        -
+        - - https://
+          - Ref: WebsocketsApi
+          - .execute-api.
+          - Ref: AWS::Region
+          - .
+          - Ref: AWS::URLSuffix
+          - /
+          - ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-central-1'}
+  stage: ${opt:stage, 'dev'}
+
+plugins:
+  - serverless-webpack
+  - serverless-plugin-log-retention
+
+functions:
+  healthcheck:
+    handler: src/handler/healthcheck.handler
+    memorySize: 128
+    events:
+      - httpApi: GET /healthcheck
+  config:
+    handler: src/handler/config.handler
+    memorySize: 128
+    events:
+      - httpApi: GET /config
+  publicKey:
+    handler: src/handler/publicKey.handler
+    memorySize: 256
+    events:
+      - httpApi: POST /public-key-by-hash
+  codeQueries:
+    handler: src/handler/codeQueries.handler
+    memorySize: 256
+    events:
+      - httpApi: POST /code-queries-by-hashes
+  message:
+    handler: src/handler/message.handler
+    memorySize: 256
+    events:
+      - httpApi: POST /message
+
+  websocket:
+    handler: src/handler/websocket.handler
+    memorySize: 256
+    events:
+      - websocket:
+          route: $default
+          routeResponseSelectionExpression: $default
+
+resources:
+  Resources:
+    dynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: primaryKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: primaryKey
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+  logRetentionInDays: 7
+  webpack:
+    webpackConfig: './webpack.config.js'
+    includeModules:
+      forceExclude:
+        - aws-sdk
+package:
+  individually: true

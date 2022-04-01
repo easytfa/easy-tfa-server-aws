@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "preserveConstEnums": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "sourceMap": false,
+    "allowJs": true,
+    "target": "es2020",
+    "outDir": ".build",
+    "module": "commonjs",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "lib": [
+      "es2020"
+    ],
+    "rootDir": "./",
+    "baseUrl": "./"
+  }
+}
