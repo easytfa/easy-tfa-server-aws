@@ -22,6 +22,7 @@ provider:
             Fn::GetAtt:
               - dynamoDbTable
               - Arn
+  websocketsApiRouteSelectionExpression: $request.body.event
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     DYNAMODB_TABLE_NAME:
@@ -71,12 +72,20 @@ functions:
     events:
       - httpApi: POST /message
 
-  websocket:
-    handler: src/handler/websocket.handler
+  websocketLinking:
+    handler: src/handler/websocketLinking.handler
     memorySize: 256
     events:
       - websocket:
-          route: $default
+          route: 'start-linking'
+          routeResponseSelectionExpression: $default
+
+  websocketQuery:
+    handler: src/handler/websocketQuery.handler
+    memorySize: 256
+    events:
+      - websocket:
+          route: 'query-code'
           routeResponseSelectionExpression: $default
 
 resources:
@@ -91,14 +100,14 @@ resources:
           - AttributeName: primaryKey
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
 custom:
   dynamodb:
     stages:
       - dev
-  logRetentionInDays: 7
+  logRetentionInDays: 30
   webpack:
     webpackConfig: './webpack.config.js'
     includeModules:
