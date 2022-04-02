@@ -13,15 +13,25 @@ provider:
         - Effect: Allow
           Action:
             - dynamodb:Query
-            - dynamodb:Scan
             - dynamodb:GetItem
             - dynamodb:PutItem
-            - dynamodb:UpdateItem
             - dynamodb:DeleteItem
+            - dynamodb:BatchWriteItem
           Resource:
             Fn::GetAtt:
               - dynamoDbTable
               - Arn
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+          Resource:
+            Fn::Join:
+              - /
+              - - Fn::GetAtt:
+                    - dynamoDbTable
+                    - Arn
+                - index
+                - NotificationEndpointIndex
   websocketsApiRouteSelectionExpression: $request.body.event
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
@@ -119,6 +129,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: primaryKey
             AttributeType: S
+          - AttributeName: notificationEndpoint
+            AttributeType: S
         KeySchema:
           - AttributeName: primaryKey
             KeyType: HASH
@@ -128,6 +140,16 @@ resources:
         TimeToLiveSpecification:
           AttributeName: expirationTime
           Enabled: true
+        GlobalSecondaryIndexes:
+          - IndexName: NotificationEndpointIndex
+            KeySchema:
+              - AttributeName: notificationEndpoint
+                KeyType: HASH
+            Projection:
+              ProjectionType: KEYS_ONLY
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
 
 custom:
   dynamodb:

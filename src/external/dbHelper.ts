@@ -13,8 +13,8 @@ export class DbHelper {
     return this.docClient.get(params).promise();
   }
 
-  public static update(params: DocumentClient.UpdateItemInput): Promise<PromiseResult<DocumentClient.UpdateItemOutput, AWSError>> {
-    return this.docClient.update(params).promise();
+  public static batchWrite(params: DocumentClient.BatchWriteItemInput): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>> {
+    return this.docClient.batchWrite(params).promise();
   }
 
   public static query(params: DocumentClient.QueryInput): Promise<PromiseResult<DocumentClient.QueryOutput, AWSError>> {
