@@ -1,6 +1,6 @@
 import * as ApiGatewayManagementApi from 'aws-sdk/clients/apigatewaymanagementapi';
 
-export class Websocket {
+export class WebsocketHelper {
   private static managementApi?: ApiGatewayManagementApi;
 
   public static get apiGatewayManagementApi(): ApiGatewayManagementApi {

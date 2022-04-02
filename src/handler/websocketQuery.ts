@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { Db } from 'src/db/db';
-import { Helper } from 'src/helper';
+import { DbHelper } from 'src/external/dbHelper';
+import { NotificationHelper } from 'src/external/notificationHelper';
+import { ResponseHelper } from 'src/external/responseHelper';
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResultV2 | undefined> {
   const connectionId = event.requestContext.connectionId;
@@ -9,14 +10,14 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   const expirationTime = Math.round(new Date().getTime() / 1000 + 24 * 3600);
   await Promise.all([
-    Db.put({
+    DbHelper.put({
       TableName: process.env.DYNAMODB_TABLE_NAME!,
       Item: {
         primaryKey: `code-query#${data.hash}`,
         message: data.message,
         expirationTime: expirationTime,
       },
-    }), Db.put({
+    }), DbHelper.put({
       TableName: process.env.DYNAMODB_TABLE_NAME!,
       Item: {
         primaryKey: `websocket-client#${data.hash}`,
@@ -25,6 +26,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       },
     }),
   ]);
-  // TODO - Notifications
-  return Helper.getReturnValue({ event: 'query-code-started' });
+
+  await NotificationHelper.sendNotification(data.hash, 'TFA request', 'Please check this request');
+  return ResponseHelper.getReturnValue({ event: 'query-code-started' });
 }

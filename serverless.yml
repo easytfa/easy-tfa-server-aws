@@ -50,27 +50,48 @@ functions:
     handler: src/handler/healthcheck.handler
     memorySize: 128
     events:
-      - httpApi: GET /healthcheck
+      - httpApi:
+          method: GET
+          path: /healthcheck
   config:
     handler: src/handler/config.handler
     memorySize: 128
     events:
-      - httpApi: GET /config
+      - httpApi:
+          method: GET
+          path: /config
+    environment:
+      NOTIFICATION_API_KEY: ${ssm:/easytfa/${opt:stage, 'dev'}/push-notifications/api-key, ''}
+      NOTIFICATION_APPLICATION_ID: ${ssm:/easytfa/${opt:stage, 'dev'}/push-notifications/application-id, ''}
+      NOTIFICATION_PROJECT_ID: ${ssm:/easytfa/${opt:stage, 'dev'}/push-notifications/project-id, ''}
   publicKey:
     handler: src/handler/publicKey.handler
     memorySize: 512
     events:
-      - httpApi: POST /public-key-by-hash
+      - httpApi:
+          method: POST
+          path: /public-key-by-hash
   codeQueries:
     handler: src/handler/codeQueries.handler
     memorySize: 512
     events:
-      - httpApi: POST /code-queries-by-hashes
+      - httpApi:
+          method: POST
+          path: /code-queries-by-hashes
   message:
     handler: src/handler/message.handler
     memorySize: 512
     events:
-      - httpApi: POST /message
+      - httpApi:
+          method: POST
+          path: /message
+  registerNotificationEndpoint:
+    handler: src/handler/registerNotificationEndpoint.handler
+    memorySize: 512
+    events:
+      - httpApi:
+          method: POST
+          path: /register-notification-endpoint
 
   websocketLinking:
     handler: src/handler/websocketLinking.handler
@@ -79,7 +100,6 @@ functions:
       - websocket:
           route: 'start-linking'
           routeResponseSelectionExpression: $default
-
   websocketQuery:
     handler: src/handler/websocketQuery.handler
     memorySize: 512
@@ -87,6 +107,9 @@ functions:
       - websocket:
           route: 'query-code'
           routeResponseSelectionExpression: $default
+    environment:
+      NOTIFICATION_PROJECT_ID: ${ssm:/easytfa/${opt:stage, 'dev'}/push-notifications/project-id, ''}
+      NOTIFICATION_FIREBASE_ADMINSDK: ${ssm(raw):/easytfa/${opt:stage, 'dev'}/push-notifications/firebase-adminsdk, ''}
 
 resources:
   Resources:
@@ -116,5 +139,7 @@ custom:
     includeModules:
       forceExclude:
         - aws-sdk
+        - fast-crc32c
+        - request
 package:
   individually: true

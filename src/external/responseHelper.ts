@@ -1,6 +1,6 @@
 import { APIGatewayProxyResultV2 } from 'aws-lambda';
 
-export class Helper {
+export class ResponseHelper {
   public static getReturnValue(object: unknown, headers?: Record<string, string>): APIGatewayProxyResultV2 {
     return {
       statusCode: 200,

@@ -2,7 +2,7 @@ import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { PromiseResult } from 'aws-sdk/lib/request';
 
-export class Db {
+export class DbHelper {
   private static docClient: DocumentClient = new DocumentClient();
 
   public static put(params: DocumentClient.PutItemInput): Promise<PromiseResult<DocumentClient.PutItemOutput, AWSError>> {

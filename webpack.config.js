@@ -16,6 +16,9 @@ module.exports = (async () => {
       'aws-sdk': 'aws-sdk',
       'aws-sdk/clients/dynamodb': 'aws-sdk/clients/dynamodb',
       'aws-sdk/clients/apigatewaymanagementapi': 'aws-sdk/clients/apigatewaymanagementapi',
+      // Optional sub-dependencies of firebase-admin that are not installed (and therefore can't be found by webpack)
+      'fast-crc32c': 'fast-crc32c',
+      'request': 'request',
     },
     module: {
       rules: [

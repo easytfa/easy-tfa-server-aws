@@ -4,23 +4,26 @@ import { ResponseHelper } from 'src/external/responseHelper';
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const body = JSON.parse(event.body!);
-  if(body == null || typeof body.hash !== 'string') {
+  if(body == null || !Array.isArray(body.browserHashes) || body.browserHashes.length > 20 || typeof body.notificationEndpoint !== 'string') {
     return ResponseHelper.getErrorReturnValue({
       success: false,
       error: 'VALIDATION_FAILED',
     });
   }
-  const dbEntry = await DbHelper.get({
+
+  // Save for up to one month
+  const expirationTime = Math.round(new Date().getTime() / 1000 + 30 * 24 * 3600);
+  let message = null;
+  await Promise.all(body.browserHashes.map((browserHash: string) => DbHelper.put({
     TableName: process.env.DYNAMODB_TABLE_NAME!,
-    Key: {
-      primaryKey: `public-key#${body.hash}`,
+    Item: {
+      primaryKey: `notification-endpoint#${browserHash}`,
+      notificationEndpoint: body.notificationEndpoint,
+      expirationTime: expirationTime,
     },
-  });
-  if(dbEntry.Item == null) {
-    return ResponseHelper.getReturnValue({ success: false });
-  }
+  })));
   return ResponseHelper.getReturnValue({
     success: true,
-    publicKey: dbEntry.Item.publicKey,
+    message: message,
   });
 }
