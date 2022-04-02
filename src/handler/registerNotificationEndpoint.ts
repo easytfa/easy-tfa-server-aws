@@ -11,8 +11,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     });
   }
 
-  // Save for up to one month
-  const expirationTime = Math.round(new Date().getTime() / 1000 + 30 * 24 * 3600);
+  // Save for up to 6 months
+  const expirationTime = Math.round(new Date().getTime() / 1000 + 6 * 30 * 24 * 3600);
   let message = null;
   await Promise.all(body.browserHashes.map((browserHash: string) => DbHelper.put({
     TableName: process.env.DYNAMODB_TABLE_NAME!,
