@@ -102,6 +102,9 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
+        TimeToLiveSpecification:
+          AttributeName: expirationTime
+          Enabled: true
 
 custom:
   dynamodb:
