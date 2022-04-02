@@ -14,6 +14,8 @@ module.exports = (async () => {
     externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
     externals: {
       'aws-sdk': 'aws-sdk',
+      'aws-sdk/clients/dynamodb': 'aws-sdk/clients/dynamodb',
+      'aws-sdk/clients/apigatewaymanagementapi': 'aws-sdk/clients/apigatewaymanagementapi',
     },
     module: {
       rules: [

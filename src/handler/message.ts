@@ -12,6 +12,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     });
   }
 
+  console.time('message dynamodb');
   const dbEntry = await Db.get({
     TableName: process.env.DYNAMODB_TABLE_NAME!,
     Key: {
@@ -21,7 +22,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   if(dbEntry.Item == null) {
     return Helper.getReturnValue({ success: false });
   }
+  console.timeEnd('message dynamodb');
 
+  console.time('message ws');
   await Websocket.apiGatewayManagementApi.postToConnection({
     ConnectionId: dbEntry.Item.connectionId,
     Data: JSON.stringify({
@@ -30,5 +33,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       data: body.data,
     }),
   }).promise();
+  console.timeEnd('message ws');
   return Helper.getReturnValue({ success: true });
 }

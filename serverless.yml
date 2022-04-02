@@ -58,23 +58,23 @@ functions:
       - httpApi: GET /config
   publicKey:
     handler: src/handler/publicKey.handler
-    memorySize: 256
+    memorySize: 512
     events:
       - httpApi: POST /public-key-by-hash
   codeQueries:
     handler: src/handler/codeQueries.handler
-    memorySize: 256
+    memorySize: 512
     events:
       - httpApi: POST /code-queries-by-hashes
   message:
     handler: src/handler/message.handler
-    memorySize: 256
+    memorySize: 512
     events:
       - httpApi: POST /message
 
   websocketLinking:
     handler: src/handler/websocketLinking.handler
-    memorySize: 256
+    memorySize: 512
     events:
       - websocket:
           route: 'start-linking'
@@ -82,7 +82,7 @@ functions:
 
   websocketQuery:
     handler: src/handler/websocketQuery.handler
-    memorySize: 256
+    memorySize: 512
     events:
       - websocket:
           route: 'query-code'
