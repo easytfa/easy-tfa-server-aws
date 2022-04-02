@@ -15,6 +15,6 @@ export async function handler(): Promise<APIGatewayProxyResultV2> {
       projectId: projectId,
     },
   }, {
-    'Cache-Control': 'public, max-age=7200',
+    'Cache-Control': 'public, max-age=86400',
   });
 }
