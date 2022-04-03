@@ -50,10 +50,11 @@ provider:
           - ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-central-1'}
   stage: ${opt:stage, 'dev'}
+  logRetentionInDays: 14
+  versionFunctions: false
 
 plugins:
   - serverless-webpack
-  - serverless-plugin-log-retention
 
 functions:
   healthcheck:
@@ -135,8 +136,8 @@ resources:
           - AttributeName: primaryKey
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
         TimeToLiveSpecification:
           AttributeName: expirationTime
           Enabled: true
@@ -155,7 +156,6 @@ custom:
   dynamodb:
     stages:
       - dev
-  logRetentionInDays: 30
   webpack:
     webpackConfig: './webpack.config.js'
     includeModules:
