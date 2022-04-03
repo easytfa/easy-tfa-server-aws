@@ -44,9 +44,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     });
   }
 
+  if(body.browserHashes.length === 0) {
+    return ResponseHelper.getReturnValue({
+      success: true,
+    });
+  }
+
   // Save for up to 6 months
   const expirationTime = Math.round(new Date().getTime() / 1000 + 6 * 30 * 24 * 3600);
-  let message = null;
   // Do this batchWrite separately since usually we don't remove outdated notification endpoints anyway unless the user unlinked (and this makes the 25-entry-limit easier to deal with for now)
   await DbHelper.batchWrite({
     RequestItems: {
@@ -63,6 +68,5 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   });
   return ResponseHelper.getReturnValue({
     success: true,
-    message: message,
   });
 }
