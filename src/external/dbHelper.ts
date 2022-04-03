@@ -9,8 +9,8 @@ export class DbHelper {
     return this.docClient.put(params).promise();
   }
 
-  public static get(params: DocumentClient.GetItemInput): Promise<PromiseResult<DocumentClient.GetItemOutput, AWSError>> {
-    return this.docClient.get(params).promise();
+  public static get<T=unknown>(params: DocumentClient.GetItemInput): Promise<PromiseResult<DocumentClient.GetItemOutput & { Item: T | undefined }, AWSError>> {
+    return this.docClient.get(params).promise() as Promise<PromiseResult<DocumentClient.GetItemOutput & { Item: T | undefined }, AWSError>>;
   }
 
   public static batchWrite(params: DocumentClient.BatchWriteItemInput): Promise<PromiseResult<DocumentClient.BatchWriteItemOutput, AWSError>> {

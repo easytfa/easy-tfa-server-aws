@@ -1,6 +1,7 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { DbHelper } from 'src/external/dbHelper';
 import { ResponseHelper } from 'src/external/responseHelper';
+import { IDbPublicKey } from 'src/interface/db';
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const body = JSON.parse(event.body!);
@@ -10,7 +11,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       error: 'VALIDATION_FAILED',
     });
   }
-  const dbEntry = await DbHelper.get({
+  const dbEntry = await DbHelper.get<IDbPublicKey>({
     TableName: process.env.DYNAMODB_TABLE_NAME!,
     Key: {
       primaryKey: `public-key#${body.hash}`,
@@ -22,5 +23,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   return ResponseHelper.getReturnValue({
     success: true,
     publicKey: dbEntry.Item.publicKey,
+    connectionId: dbEntry.Item.connectionId,
   });
 }

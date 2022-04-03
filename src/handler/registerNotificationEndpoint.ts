@@ -1,6 +1,7 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { DbHelper } from 'src/external/dbHelper';
 import { ResponseHelper } from 'src/external/responseHelper';
+import { IDbNotificationEndpoint } from 'src/interface/db';
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   const body: { browserHashes: string[]; notificationEndpoint: string } = JSON.parse(event.body!);
@@ -55,7 +56,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
             primaryKey: `notification-endpoint#${browserHash}`,
             notificationEndpoint: body.notificationEndpoint,
             expirationTime: expirationTime,
-          },
+          } as IDbNotificationEndpoint,
         },
       })),
     },
