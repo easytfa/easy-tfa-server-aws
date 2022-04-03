@@ -1,18 +1,19 @@
-import * as firebase from 'firebase-admin';
+import { App, cert, initializeApp } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
 import { DbHelper } from 'src/external/dbHelper';
 
 export class NotificationHelper {
-  private static firebaseApp?: firebase.app.App;
+  private static firebaseApp?: App;
 
-  private static getApp(): firebase.app.App | undefined {
+  private static getApp(): App | undefined {
     const firebaseSdkString = process.env['NOTIFICATION_FIREBASE_ADMINSDK'];
     const projectId = process.env['NOTIFICATION_PROJECT_ID'];
     if(firebaseSdkString == null || firebaseSdkString === '' || projectId == null || projectId === '') {
       return undefined;
     }
     if(this.firebaseApp == null) {
-      this.firebaseApp = firebase.initializeApp({
-        credential: firebase.credential.cert(JSON.parse(firebaseSdkString)),
+      this.firebaseApp = initializeApp({
+        credential: cert(JSON.parse(firebaseSdkString)),
         projectId: projectId,
       });
     }
@@ -33,7 +34,7 @@ export class NotificationHelper {
     if(recipient.Item == null) return;
     const receipientEndpoint = recipient.Item.notificationEndpoint;
 
-    await app.messaging().send({
+    await getMessaging(app).send({
       token: receipientEndpoint,
       notification: {
         title,
