@@ -52,6 +52,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   logRetentionInDays: 14
   versionFunctions: false
+  architecture: arm64
 
 plugins:
   - serverless-webpack
