@@ -19,6 +19,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       Key: {
         primaryKey: `code-query#${hash}`,
       },
+      ConsistentRead: true,
     });
     if(dbEntry.Item != null) {
       message = dbEntry.Item.message;
