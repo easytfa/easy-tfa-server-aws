@@ -49,6 +49,8 @@ export class NotificationHelper {
           sound: 'default',
           channelId: 'easytfa_notification_channel',
           icon: 'ic_aegis_iconx',
+          // TODO maybe add URL/website in the future
+          tag: 'easytfa',
         },
       },
     });
