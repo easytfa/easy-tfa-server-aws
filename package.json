@@ -11,6 +11,6 @@
     "webpack": "^5.70.0"
   },
   "dependencies": {
-    "firebase-admin": "^10.0.2"
+    "firebase-admin": "^11.0.0"
   }
 }
