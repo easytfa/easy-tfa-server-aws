@@ -4,7 +4,7 @@
     "@types/node": "^18.15.3",
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.1398.0",
-    "serverless-webpack": "^5.11.0",
+    "serverless-webpack": "^5.14.0",
     "ts-loader": "^9.4.3",
     "tsconfig-paths-webpack-plugin": "^3.5.2",
     "typescript": "^5.1.3",
